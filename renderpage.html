@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <script src="jquery-3.3.1.min.js"></script>
+
+
+  <title>Gabe's Trig Machine</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!-- <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script> -->
+
+<link rel="stylesheet" type="text/css" href="mathquill-0.10.1/mathquill.css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="mathquill-0.10.1/mathquill.js"></script>
+  <!-- <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML" async>
+</script> -->
+  <script src="latex-to-js.js"></script>
+
+  <!-- <script src="https://www.desmos.com/api/v1.2/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script> -->
+<script src="https://www.desmos.com/api/v1.2/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+
+<style>
+.peq {
+    display: inline;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+#byte_content {
+    margin: 5px 0;
+    max-height: 100px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  #byte_range { margin-top: 5px; }
+
+
+</style>
+
+</head>
+
+<!-- <input type="file" id="files" name="file" /> Read bytes: 
+<span class="readBytesButtons">
+  <button data-startbyte="0" data-endbyte="4">1-5</button>
+  <button data-startbyte="5" data-endbyte="14">6-15</button>
+  <button data-startbyte="6" data-endbyte="7">7-8</button>
+  <button>entire file</button>
+</span>
+<div id="byte_range"></div>
+<div hidden=True id="byte_content"></div> -->
+
+<!-- <button onclick='httpGet("http://localhost:8000/")'>Button2</button> -->
+
+
+
+<script>
+function httpGet(theUrl)
+{
+    // if (window.XMLHttpRequest)
+    // {// code for IE7+, Firefox, Chrome, Opera, Safari
+    //     xmlhttp=new XMLHttpRequest();
+    // }
+    // else
+    // {// code for IE6, IE5
+    //     xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    // }
+    // xmlhttp.onreadystatechange=function()
+    // {
+    //     if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    //     {
+    //       alert(xmlhttp.responseText);
+    //         return xmlhttp.responseText;
+    //     }
+    // }
+    // xmlhttp.open("GET", theUrl, false );
+    // xmlhttp.send();   
+
+
+    var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", theUrl, false);
+        rawFile.onreadystatechange = function ()
+        {
+            if(rawFile.readyState === 4)
+            {
+                if(rawFile.status === 200 || rawFile.status == 0)
+                {
+                  // alert(rawFile.responseText);
+                    var allText = rawFile.responseText;
+                    alert(allText);
+    
+                    // var a = allText.split("\n");	
+    
+    
+                }
+            }
+        }
+        rawFile.send(null);
+    }
+  
+
+
+</script>
+
+
+
+
+
+<!-- <a id="export" class="myButton" download="jstopytext" onclick="downloadnow()" href="#">export</a> -->
+
+<!-- <button onclick="">button</button> -->
+
+<style>
+form * {
+  display: block;
+  margin: 10px;
+}
+</style>
+
+<!-- <form onsubmit="download(this['name'].value, this['text'].value)">
+    <input type="text" name="name" value="test.txt">
+    <textarea name="text"></textarea>
+    <input type="submit" value="Download">
+</form> -->
+
+<!-- <script>
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+</script> -->
+
+
+<script>
+
+  var blobObject = null;
+
+    function createDownloadLink(anchorSelector, str, fileName){
+      
+      if(window.navigator.msSaveOrOpenBlob) {
+        var fileData = [str];
+        blobObject = new Blob(fileData);
+        $(anchorSelector).click(function(){
+          window.navigator.msSaveOrOpenBlob(blobObject, fileName);
+        });
+      } else {
+        var url = "data:text/plain;charset=utf-8," + encodeURIComponent(str);
+        // alert(url);
+        $(anchorSelector).attr("href", url);
+        // alert("here");
+      }
+    }
+    
+    function downloadnow () {
+      console.log("downnow");
+      $(function () {
+      var mathFieldSpan = document.getElementById('math-field');
+      alert(mathField.latex());
+      var str = mathField.latex();
+      createDownloadLink("#export",str,"jstopytext.txt");
+    });
+    }
+    
+    
+    </script>
+
+
+
+
+
+
+<p hidden=True>LaTeX of what you typed: <span hidden=True id="latex"></span></p>
+
+
+  Type your equation here: <span id="math-field"></span><br>
+  <p>Command to run: <i>python criticalpoints.py -e <span id="commandpart1">f</span> -a 40</i>  inside of the folder</p>
+  <!-- <button onclick='alert("To evaluate open the EVALUATE.cmd file in your download folder. Then reload the page.")'>Calculate</button> -->
+
+
+  
+  <script>
+  var mathFieldSpan = document.getElementById('math-field');
+  var latexSpan = document.getElementById('latex');
+  var commandpart1Span = document.getElementById('commandpart1');
+  
+  var MQ = MathQuill.getInterface(2); // for backcompat
+  var mathField = MQ.MathField(mathFieldSpan, {
+    spaceBehavesLikeTab: true, // configurable
+    handlers: {
+      edit: function() { // useful event handlers
+        latexSpan.textContent = mathField.latex(); // simple API
+        setGraph1(mathField.latex());
+        // alert(latex_to_js(mathField.latex()));
+        commandpart1Span.textContent = latex_to_js(mathField.latex());
+        
+      }
+    }
+  });
+  </script>
+
+<div hidden=True id="main">sin(x)</div>
+
+
+<div class="row">
+    <div class="column">
+        <body>
+            In the case of <p class="peq" id="main-equation"></p>, the common solutions are as follows:<br>
+            <h3>Invertable region domains</h3>
+            Invertable domain: <p class="peq" id="domainx"></p><br>
+            <h4>All possible domains equations (n=N)</h4>
+            x1 = <p class="peq" id="x1"></p><br>
+            x2 = <p class="peq" id="x2"></p><br><br>
+            <h3>Other Solutions</h3>
+            Periodicity: <p class="peq" id="periodicity"></p><br>
+            Inverse Equation: <p class="peq" id="inverse"></p><br>
+
+
+            <br><h2>Angle Solutions</h2>
+            Quadrant of Unit Circle: Quadrant #<p class="peq" id="quad"></p><br>
+            
+            </body>
+
+
+    </div>
+    <div class="column">
+        <div id="calculator" style="width: 600px; height: 400px;"></div>
+
+        <div id="scicalculator" style="width: 50%; max-width: 400px; height: 400px;"></div>
+
+        <script >
+          var elt = document.getElementById('scicalculator');
+          var scicalculator = Desmos.ScientificCalculator(elt);
+        </script>
+
+        <script>
+          var latexSpan = document.getElementById('latex');
+            var elt = document.getElementById('calculator');
+            var calculator = Desmos.GraphingCalculator(elt);
+            calculator.setExpression({id:'graph1', latex:"y=x"});
+            calculator.setExpression({id: 'n', latex: 'n=1'});
+            // calculator.setExpression({id: 'n', sliderBounds: { min: 1, max: 10, step: 1}});
+            function setGraph1(latex) {
+              calculator.setExpression({id:'graph1', latex:latex});
+            }
+            function setgraphbyid(id, latex) {
+              calculator.setExpression({id:id, latex:latex});
+            }
+
+        
+       
+  
+        
+        </script>
+    
+      </div>
+  </div>
+
+
+  <script>
+    readTextFile("readmehere.txt")
+    function readTextFile(file)
+    {
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, false);
+        rawFile.onreadystatechange = function ()
+        {
+            if(rawFile.readyState === 4)
+            {
+                if(rawFile.status === 200 || rawFile.status == 0)
+                {
+                    var allText = rawFile.responseText;
+                    // alert(allText);
+    
+                    var a = allText.split("\n");	
+                    // alert(a[0]);
+                    // alert(a[1]);
+      
+          document.getElementById("main-equation").innerHTML =
+         a[0];;
+    
+         setGraph1(a[0].slice(1, a[0].length -2));
+    
+           document.getElementById("x1").innerHTML =
+         a[1];;
+
+         setgraphbyid('graph2', "x=" + a[1].slice(1, a[1].length -2));
+    
+         document.getElementById("x2").innerHTML =
+         a[2];;
+
+         setgraphbyid('graph3', "x=" + a[2].slice(1, a[2].length -2));
+         
+          document.getElementById("domainx").innerHTML =
+         a[3];;
+    
+         document.getElementById("periodicity").innerHTML =
+         a[4];;
+    
+          document.getElementById("quad").innerHTML =
+         a[5];;
+         
+         document.getElementById("inverse").innerHTML =
+         a[6];;
+    
+
+    // not working because arcsin is operatorname asin and so just views as nothing on graph
+        //  setgraphbyid('graph4', a[6].slice(1, a[6].length -2));
+
+
+    
+    
+    
+         (function () {
+      var head = document.getElementsByTagName("head")[0], script;
+      script = document.createElement("script");
+      script.type = "text/x-mathjax-config";
+      script[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({\n" +
+        "  tex2jax: { inlineMath: [['$','$'], ['\\\\(','\\\\)']] }\n" +
+        "});";
+      head.appendChild(script);
+      script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML";
+      head.appendChild(script);
+    })();
+    
+                }
+            }
+        }
+        rawFile.send(null);
+    }
+    
+    </script>
+
+
+
+
+</body>
+</html>
