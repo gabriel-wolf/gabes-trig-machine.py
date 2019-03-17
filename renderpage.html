@@ -4,7 +4,48 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <script src="jquery-3.3.1.min.js"></script>
+  <script src="algebra-0.2.6.min.js"></script>
+  <script src="mathjs/dist/math.js"></script>
+  <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML.js"></script> -->
 
+  <script type="text/javascript" src="javascript-cas/build/javascript-cas.js"></script>
+  <script src="https://unpkg.com/mathjs@5.4.2/dist/math.min.js"></script>
+  <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML.js"></script> -->
+
+  <style>
+    /* body,
+    html,
+    table td,
+    table th,
+    input[type=text] {
+      font-size: 11pt;
+      font-family: verdana, arial, sans-serif;
+    } */
+
+    .h1e {
+      font-size: 11pt;
+    }
+
+    .inpute [type=text] {
+      padding: 5px;
+      width: 400px;
+    }
+
+    .tablee {
+      border-collapse: collapse;
+    }
+
+    .tablee td,
+    .tablee th {
+      padding: 5px;
+      border: 1px solid lightgray;
+    }
+
+    .tablee th {
+      background-color: lightgray;
+    }
+
+  </style>
 
   <title>Gabe's Trig Machine</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -71,6 +112,10 @@
 <div hidden=True id="byte_content"></div> -->
 
 <!-- <button onclick='httpGet("http://localhost:8000/")'>Button2</button> -->
+
+<script>
+
+  </script>
 
 
 
@@ -194,7 +239,82 @@ function download(filename, text) {
 
 
 
+<table class="tablee">
+    <tr>
+      <th>Expression</th>
+      <td><input type="text" id="expr"/></td>
+    </tr>
+    <tr>
+      <th>Pretty print</th>
+      <td><div id="pretty">$$$$</div></td>
+    </tr>
+    <tr>
+      <th>Result</th>
+      <td><div id="result"></div></td>
+    </tr>
+  </table>
+  <!-- <b>Parenthesis option:</b>
+  <input hidden=true class="inpute" type="radio" name="parenthesis" value="keep" onclick="parenthesis = 'keep'; expr.oninput();" checked>keep
+  <input hidden=true class="inpute" type="radio" name="parenthesis" value="auto" onclick="parenthesis = 'auto'; expr.oninput();">auto
+  <input hidden=true class="inpute" type="radio" name="parenthesis" value="all" onclick="parenthesis = 'all'; expr.oninput();">all
+  <br/>
+  <!-- <b>Implicit multiplication:</b> -->
+  <!-- <input hidden=true class="inpute" type="radio" name="implicit" value="hide" onclick="implicit = 'hide'; expr.oninput();" checked>hide -->
+  <!-- <input hidden=true class="inpute" type="radio" name="implicit" value="show" onclick="implicit = 'show'; expr.oninput();">show -->
+   <!-- --> -->
+  
+  <script>
+    const expr = document.getElementById('expr')
+    const pretty = document.getElementById('pretty')
+    const result = document.getElementById('result')
+    let parenthesis = 'keep'
+    let implicit = 'hide'
+  
+    // initialize with an example expression
+    expr.value = 'sin(pi / 4)^2'
+    pretty.innerHTML = '$$' + math.parse(expr.value).toTex({parenthesis: parenthesis}) + '$$'
+    result.innerHTML = math.format(math.eval(expr.value))
+  
+    expr.oninput = function () {
+      let node = null
+  
+      try {
+        // parse the expression
+        node = math.parse(expr.value)
+  
+        // evaluate the result of the expression
+        result.innerHTML = math.format(node.compile().eval())
+      }
+      catch (err) {
+        try {
+          const f = math.parse(expr.value)
+          const simplified = math.simplify(f)
+          console.log(simplified)
+          node = math.parse(simplified.value)
+          console.log(f)
+          result.innerHTML = math.format(math.parse('sin(x+1)').compile().eval())
 
+          
+          // result.innerHTML = math.format(node.compile().eval())
+        }
+        catch {
+          result.innerHTML = '<span style="color: red;">' + err.toString() + '</span>'
+
+        }
+      }
+  
+      try {
+        // export the expression to LaTeX
+        const latex = node ? node.toTex({parenthesis: parenthesis, implicit: implicit}) : ''
+        console.log('LaTeX expression:', latex)
+  
+        // display and re-render the expression
+        const elem = MathJax.Hub.getAllJax('pretty')[0]
+        MathJax.Hub.Queue(['Text', elem, latex])
+      }
+      catch (err) {}
+    }
+  </script>
 
 
 <p hidden=True>LaTeX of what you typed: <span hidden=True id="latex"></span></p>
@@ -241,7 +361,7 @@ function download(filename, text) {
             <h3>Other Solutions</h3>
             Periodicity: <p class="peq" id="periodicity"></p><br>
             Inverse Equation: <p class="peq" id="inverse"></p><br>
-
+            Simplified Equation: <p class="peq" id="simplify"></p><br>
 
             <br><h2>Angle Solutions</h2>
             Quadrant of Unit Circle: Quadrant #<p class="peq" id="quad"></p><br>
@@ -329,7 +449,31 @@ function download(filename, text) {
          
          document.getElementById("inverse").innerHTML =
          a[6];;
+
+         document.getElementById("simplify").innerHTML =
+         a[7];;
+
+
+          // const fex = math.parse(a[0].slice(1, a[0].length -2))
+          // const fex = math.parse('\sin{\left (x / 2 \pi \right )}')
+
+          
+        //   console.log(fex)
+        //  console.log(fex.toString())
     
+
+        //  const f = math.parse('sin(x+1)')
+
+        // const simplified = math.simplify(f)
+        // console.log(simplified.toString())     
+
+
+        // console.log(f.toString())     // '3 * x'
+        // console.log(f.toTex())
+
+        // console.log(math.atan2(3, -3) / math.pi) 
+        // console.log(math.derivative('x^2 + x', 'x')) 
+
 
     // not working because arcsin is operatorname asin and so just views as nothing on graph
         //  setgraphbyid('graph4', a[6].slice(1, a[6].length -2));

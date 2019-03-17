@@ -97,7 +97,7 @@ limxtwo = int(((3*pi)/4) + (pi*1))
  
 from sympy import latex, Rational
 from sympy.abc import tau
-from sympy import latex
+from sympy import latex, simplify
 from sympy.abc import x, y, mu, r, tau
 import codecs
 n = Dummy('n')
@@ -111,6 +111,14 @@ def inversesolve(func):
     # print(inverseexpr)
     # print(solve(inverseexpr,y))
     return solve(inverseexpr,y)
+
+
+def simplifyme(expr):
+    simplifyexpr = simplify(expr)
+    # print(simplifyexpr)
+    return(simplifyexpr)
+
+
 
 
 
@@ -192,7 +200,8 @@ else:
     file.write("None")
 file.write("\n")
 file.write(latex(inversesolve(expr), mode='inline'))
-
+file.write("\n")
+file.write(latex(simplifyme(expr), mode='inline'))
 
 
 
@@ -200,7 +209,13 @@ file.write(latex(inversesolve(expr), mode='inline'))
 file.close() 
 
 
-webbrowser.open("renderpage.html")
+# webbrowser.open("renderpage.html")
+
+
+
+
+
+
 
 
 
